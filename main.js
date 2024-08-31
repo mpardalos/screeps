@@ -80,12 +80,12 @@ module.exports.loop = function () {
             try {
                 spawnRole(spawn, roleName);
             } catch (e) {
-                if (e instanceof ScreepsError && e.title === 'ERR_NOT_ENOUGH_ENERGY') {
-                    // OK
-                } else {
-                    throw e;
+                switch (e.errcode) {
+                    case ERR_NOT_ENOUGH_ENERGY: break;
+                    default:
+                        console.log(`Error spawning ${roleName} from ${spawn}.\n${e}`)
+                        break;
                 }
-
             }
         }
     }
@@ -93,6 +93,10 @@ module.exports.loop = function () {
     for (const name in Game.creeps) {
         const creep = Game.creeps[name];
         const roleName = Memory.creeps[name].role;
-        roles[roleName].run(creep);
+        try {
+            roles[roleName].run(creep);
+        } catch (e) {
+            console.log(`Error running ${roleName} on ${creep}.\n${e}`)
+        }
     }
 }

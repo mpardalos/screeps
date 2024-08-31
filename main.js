@@ -8,6 +8,8 @@ function nextName(basename) {
     return val;
 }
 
+const primarySpawn = Game.spawns['Spawn1'];
+
 const roles = {
     harvester: {
         count: 5,
@@ -25,6 +27,47 @@ const roles = {
                 if (creep.transfer(Game.spawns['Spawn1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(Game.spawns['Spawn1']);
                 }
+            }
+        }
+    },
+    upgrader: {
+        count: 5,
+        body: [WORK, MOVE, CARRY],
+        initMemory: { state: 'harvesting' },
+        run: function (creep) {
+            const state = creep.memory.state;
+            creep.say(state);
+            switch (state) {
+                case 'harvesting':
+                    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        const harvestSource = creep.room.find(FIND_SOURCES)[0];
+                        const result = creep.harvest(harvestSource);
+                        switch (result) {
+                            case OK: break;
+                            case ERR_NOT_IN_RANGE:
+                                creep.moveTo(harvestSource);
+                                break;
+                            default:
+                                throw new ScreepsError(result, 'Could not harvest for upgrading');
+                        }
+                    } else {
+                        creep.memory.state = 'upgrading'
+                    }
+                    break;
+                case 'upgrading':
+                    const result = creep.upgradeController(creep.room.controller);
+                    switch (result) {
+                        case OK: break;
+                        case ERR_NOT_IN_RANGE:
+                            creep.moveTo(creep.room.controller);
+                            break;
+                        case ERR_NOT_ENOUGH_RESOURCES:
+                            creep.memory.state = 'harvesting';
+                            break;
+                        default:
+                            throw new ScreepsError(result, 'Could not upgrade controller');
+                            break;
+                    }
             }
         }
     }
@@ -63,7 +106,7 @@ function spawnRole(spawn, roleName) {
     const name = nextName(roleName);
     console.log(`Spawning ${name}`);
 
-    const result = spawn.spawnCreep(role.body, name, { memory: { role: roleName } });
+    const result = spawn.spawnCreep(role.body, name, { memory: { role: roleName, ...role.initMemory } });
     if (result !== OK) {
         throw new ScreepsError(canSpawn, 'Tried to spawn creep but failed');
     }

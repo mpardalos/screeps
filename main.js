@@ -32,46 +32,23 @@ const roles = {
 
 class ScreepsError extends Error {
     constructor(errcode, message) {
-        let title, details;
+        let title;
         switch (errcode) {
-            case 0:
-                title = 'OK';
-                details = 'The operation has been scheduled successfully.';
-                break;
-            case ERR_NOT_OWNER:
-                title = 'ERR_NOT_OWNER';
-                details = 'You are not the owner of this spawn.';
-                break;
-            case ERR_NAME_EXISTS:
-                title = 'ERR_NAME_EXISTS';
-                details = 'There is a creep with the same name already.';
-                break;
-            case ERR_BUSY:
-                title = 'ERR_BUSY';
-                details = 'The spawn is already in process of spawning another creep.';
-                break;
-            case ERR_NOT_ENOUGH_ENERGY:
-                title = 'ERR_NOT_ENOUGH_ENERGY';
-                details = 'The spawn and its extensions contain not enough energy to create a creep with the given body.';
-                break;
-            case ERR_INVALID_ARGS:
-                title = 'ERR_INVALID_ARGS';
-                details = 'Body is not properly described or name was not provided.';
-                break;
-            case ERR_RCL_NOT_ENOUGH:
-                title = 'ERR_RCL_NOT_ENOUGH';
-                details = 'Your Room Controller level is insufficient to use this spawn.';
-                break;
-            default:
-                title = `${errcode}`;
-                details = "Unknown error code";
-                break;
+            case OK: title = 'OK'; break;
+            case ERR_NOT_OWNER: title = 'ERR_NOT_OWNER'; break;
+            case ERR_NAME_EXISTS: title = 'ERR_NAME_EXISTS'; break;
+            case ERR_BUSY: title = 'ERR_BUSY'; break;
+            case ERR_NOT_ENOUGH_ENERGY: title = 'ERR_NOT_ENOUGH_ENERGY'; break;
+            case ERR_INVALID_ARGS: title = 'ERR_INVALID_ARGS'; break;
+            case ERR_RCL_NOT_ENOUGH: title = 'ERR_RCL_NOT_ENOUGH'; break;
+            case ERR_INVALID_TARGET: title = 'ERR_INVALID_TARGET'; break;
+            case ERR_NOT_IN_RANGE: title = 'ERR_NOT_IN_RANGE'; break;
+            default: title = `${errcode}`; break;
         }
-        super(`${message} (${title}: ${details})`)
+        super(`${message} (${title})`)
 
         this.errcode = errcode;
         this.title = title;
-        this.details = details;
     }
 }
 

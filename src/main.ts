@@ -58,10 +58,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } catch (e) {
         if (is_errcode(e, ERR_NOT_ENOUGH_ENERGY)) {
           // OK
+        } else if (is_errcode(e, ERR_BUSY)) {
+          // OK
         } else {
           console.log(`Error spawning ${roleName} from ${spawn}.\n${e}`);
         }
       }
+      break;
     }
   }
 

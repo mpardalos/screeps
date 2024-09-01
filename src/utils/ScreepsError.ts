@@ -32,6 +32,9 @@ export class ScreepsError extends Error {
       case ERR_NOT_IN_RANGE:
         title = "ERR_NOT_IN_RANGE";
         break;
+      case ERR_FULL:
+        title = "ERR_FULL";
+        break;
       default:
         title = `${errcode}`;
         break;

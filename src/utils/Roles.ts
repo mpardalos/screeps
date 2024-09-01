@@ -57,31 +57,37 @@ export function harvestUntilFull(creep: Creep, source: Source): "OK" | "FULL" {
 export function upgradeUntilEmpty(creep: Creep, controller: StructureController): "OK" | "EMPTY" {
   const result = creep.upgradeController(controller);
   switch (result) {
-    case OK:
-      break;
     case ERR_NOT_IN_RANGE:
       creep.moveTo(controller);
-      break;
+      // fallthrough
+    case OK:
+      return "OK";
     case ERR_NOT_ENOUGH_RESOURCES:
       return "EMPTY";
     default:
       throw new ScreepsError(result, "Could not upgrade controller");
   }
-  return "OK";
 }
 
-export function depositUntilEmpty(creep: Creep, spawn: StructureSpawn): "OK" | "EMPTY" {
+/// Move to the given spawn and deposit all carried resources there.
+///
+/// Returns:
+/// 'OK' if able to transfer or moving to the spawn
+/// 'EMPTY' if out of resources
+/// 'FULL' if attempted to transfer but the spawn was full
+export function depositUntilEmpty(creep: Creep, spawn: StructureSpawn): "OK" | "EMPTY" | "FULL" {
   const result = creep.transfer(spawn, RESOURCE_ENERGY);
   switch (result) {
-    case OK:
-      break;
     case ERR_NOT_IN_RANGE:
       creep.moveTo(spawn);
-      break;
+      return "OK"
+    case OK:
+      return "OK";
+    case ERR_FULL:
+      return "FULL";
     case ERR_NOT_ENOUGH_RESOURCES:
       return "EMPTY";
     default:
       throw new ScreepsError(result, "Could not transfer resources");
   }
-  return "OK";
 }

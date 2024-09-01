@@ -1,8 +1,10 @@
-import { claimSource, runRoleOnEach } from "utils/Roles";
+import { claimSource, depositUntilEmpty, harvestUntilFull, runRoleOnEach } from "utils/Roles";
 
 export interface HarvesterMemory {
   role: "harvester";
   source: Id<Source>;
+  spawn: Id<StructureSpawn>;
+  state: "harvesting" | "depositing";
 }
 
 export const harvester: Role = {
@@ -21,26 +23,39 @@ export const harvester: Role = {
         return;
       }
 
+      if ((creep.memory.roleData as any).state === undefined) {
+        creep.memory.roleData.state = 'harvesting';
+      }
+
       if (creep.memory.roleData.source === undefined) {
         // Claim a source if we don't have one
         creep.memory.roleData.source = claimSource(creep).id
       }
 
       const source = Game.getObjectById(creep.memory.roleData.source);
-      if (source === null) {
-        throw "wat";
+      if (source === null) throw "wat";
+
+      if (creep.memory.roleData.spawn === undefined) {
+        // Claim a source if we don't have one
+        creep.memory.roleData.spawn = Game.spawns['Spawn1'].id;
       }
 
-      if (creep.store.getFreeCapacity() > 0) {
-        creep.say("harvesting");
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(source);
-        }
-      } else {
-        creep.say("depositing");
-        if (creep.transfer(Game.spawns["Spawn1"], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(Game.spawns["Spawn1"]);
-        }
+      const spawn = Game.getObjectById(creep.memory.roleData.spawn);
+      if (spawn === null) throw "wat";
+
+      const state = creep.memory.roleData.state;
+      creep.say(state);
+      switch (state) {
+        case "harvesting":
+          if (harvestUntilFull(creep, source) === "FULL") {
+            creep.memory.roleData.state = "depositing";
+          }
+          break;
+        case "depositing":
+          if (depositUntilEmpty(creep, spawn) == 'EMPTY') {
+            creep.memory.roleData.state = "harvesting";
+          }
+          break;
       }
     });
   }

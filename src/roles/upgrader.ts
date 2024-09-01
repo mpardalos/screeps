@@ -1,4 +1,4 @@
-import { claimSource, runRoleOnEach } from "utils/Roles";
+import { claimSource, harvestUntilFull, runRoleOnEach, upgradeUntilEmpty } from "utils/Roles";
 import { ScreepsError } from "utils/ScreepsError";
 
 export interface UpgraderMemory {
@@ -44,35 +44,15 @@ export const upgrader: Role = {
       creep.say(state);
       switch (state) {
         case "harvesting":
-          if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-            const result = creep.harvest(source);
-            switch (result) {
-              case OK:
-                break;
-              case ERR_NOT_IN_RANGE:
-                creep.moveTo(source);
-                break;
-              default:
-                throw new ScreepsError(result, "Could not harvest for upgrading");
-            }
-          } else {
+          if (harvestUntilFull(creep, source) === "FULL") {
             creep.memory.roleData.state = "upgrading";
           }
           break;
         case "upgrading":
-          const result = creep.upgradeController(creep.room.controller);
-          switch (result) {
-            case OK:
-              break;
-            case ERR_NOT_IN_RANGE:
-              creep.moveTo(creep.room.controller);
-              break;
-            case ERR_NOT_ENOUGH_RESOURCES:
-              creep.memory.roleData.state = "harvesting";
-              break;
-            default:
-              throw new ScreepsError(result, "Could not upgrade controller");
+          if (upgradeUntilEmpty(creep, creep.room.controller) == 'EMPTY') {
+            creep.memory.roleData.state = "harvesting";
           }
+          break;
       }
     });
   }

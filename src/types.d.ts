@@ -1,3 +1,6 @@
+import { HarvesterMemory } from "roles/harvester";
+import { UpgraderMemory } from "roles/upgrader";
+
 declare global {
   /*
     Example types, expand on these or remove them and add your own.
@@ -14,18 +17,10 @@ declare global {
 
   type RoleName = "harvester" | "upgrader";
 
-  interface HarvesterMemory {
-    role: "harvester";
-    source: Id<Source>;
-  }
-
-  interface UpgraderMemory {
-    role: "upgrader";
-    state: "harvesting" | "upgrading";
-  }
+  type RoleData = HarvesterMemory | UpgraderMemory;
 
   interface CreepMemory {
-    roleData: HarvesterMemory | UpgraderMemory;
+    roleData: RoleData;
   }
 
   interface Role {

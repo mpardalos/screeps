@@ -229,6 +229,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
     const roleName = Memory.creeps[name].roleData.role;
+
+    if (creep.spawning) {
+      // Do not try to act on creeps still being spawned.
+      continue;
+    }
+
     try {
       roles[roleName].run(creep);
     } catch (e) {

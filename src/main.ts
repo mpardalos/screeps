@@ -192,22 +192,16 @@ function spawnRole(spawn: StructureSpawn, roleName: RoleName) {
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}`);
   const spawn = Game.spawns["Spawn1"];
 
   // Automatically delete memory of missing creeps
-  console.log("Delete missing creeps memory");
   for (const name in Memory.creeps) {
     if (!(name in Game.creeps)) {
+      console.log(`${name} is gone. Cleaning up memory`);
       delete Memory.creeps[name];
     }
-
-    // if (Memory.creeps[name].roleData === undefined) {
-    //   Memory.creeps[name]
-    // }
   }
 
-  console.log("Spawns");
   for (let roleNameString in roles) {
     const roleName = roleNameString as RoleName;
     const role = roles[roleName];
@@ -217,7 +211,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     if (shouldSpawn) {
       try {
-        console.log("spawnRole");
         spawnRole(spawn, roleName);
       } catch (e) {
         if (e instanceof ScreepsError && e.errcode === ERR_NOT_ENOUGH_ENERGY) {
@@ -229,7 +222,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  console.log("Run roles");
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
     const roleName = Memory.creeps[name].roleData.role;

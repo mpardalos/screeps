@@ -172,6 +172,10 @@ class ScreepsError extends Error {
   }
 }
 
+function is_errcode(e: any, errcode: ScreepsReturnCode): boolean {
+  return (e instanceof ScreepsError && e.errcode === errcode)
+}
+
 function spawnRole(spawn: StructureSpawn, roleName: RoleName) {
   const role = roles[roleName];
 
@@ -213,7 +217,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       try {
         spawnRole(spawn, roleName);
       } catch (e) {
-        if (e instanceof ScreepsError && e.errcode === ERR_NOT_ENOUGH_ENERGY) {
+        if (is_errcode(e, ERR_NOT_ENOUGH_ENERGY)) {
           // OK
         } else {
           console.log(`Error spawning ${roleName} from ${spawn}.\n${e}`);

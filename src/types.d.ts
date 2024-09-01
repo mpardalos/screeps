@@ -27,7 +27,7 @@ declare global {
     count: number;
     body: BodyPartConstant[];
     initMemory?: any;
-    run: (creep: Creep) => void;
+    run: (creep: Creep[]) => void;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")

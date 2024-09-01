@@ -67,19 +67,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  for (const name in Game.creeps) {
-    const creep = Game.creeps[name];
-    const roleName = Memory.creeps[name].roleData.role;
+  for (let roleNameString in roles) {
+    const roleName = roleNameString as RoleName;
 
-    if (creep.spawning) {
-      // Do not try to act on creeps still being spawned.
-      continue;
-    }
+    const creeps = _.filter(Game.creeps, creep => creep.memory.roleData.role === roleName);
 
     try {
-      roles[roleName].run(creep);
+      roles[roleName].run(creeps);
     } catch (e) {
-      console.log(`Error running ${roleName} on ${creep}.\n${e}`);
+      console.log(`Error running ${roleName}.\n${e}`);
     }
   }
 });

@@ -81,10 +81,13 @@ const roles: { [name in RoleName]: Role } = {
     initMemory: { state: "harvesting" },
     run: function (creep) {
       if (creep.memory.roleData.role !== "upgrader") {
+        // This is checked before calling this function, but we add this for
+        // typescript
         return;
       }
 
       if (creep.room.controller === undefined) {
+        // Should never happen. Just silently do nothing.
         return;
       }
 

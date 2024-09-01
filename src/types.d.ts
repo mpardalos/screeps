@@ -13,6 +13,7 @@ declare global {
   // Memory extension samples
   interface Memory {
     nextNameIdx: number;
+    harvesters: { [key: Id<Source>]: Id<Creep>[] }
   }
 
   type RoleName = "harvester" | "upgrader";

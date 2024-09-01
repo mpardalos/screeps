@@ -1,4 +1,4 @@
-import { runRoleOnEach } from "utils/Roles";
+import { claimSource, runRoleOnEach } from "utils/Roles";
 
 export interface HarvesterMemory {
   role: "harvester";
@@ -22,10 +22,8 @@ export const harvester: Role = {
       }
 
       if (creep.memory.roleData.source === undefined) {
-        const sources = creep.room.find(FIND_SOURCES);
-        creep.memory.roleData.source = sources[0].id;
-      } else if ((creep.memory.roleData.source as any).id !== undefined) {
-        creep.memory.roleData.source = (creep.memory.roleData.source as any).id;
+        // Claim a source if we don't have one
+        creep.memory.roleData.source = claimSource(creep).id
       }
 
       const source = Game.getObjectById(creep.memory.roleData.source);

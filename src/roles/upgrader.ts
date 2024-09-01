@@ -1,9 +1,10 @@
-import { runRoleOnEach } from "utils/Roles";
+import { claimSource, runRoleOnEach } from "utils/Roles";
 import { ScreepsError } from "utils/ScreepsError";
 
 export interface UpgraderMemory {
   role: "upgrader";
   state: "harvesting" | "upgrading";
+  source: Id<Source>;
 }
 
 export const upgrader: Role = {
@@ -29,18 +30,27 @@ export const upgrader: Role = {
         return;
       }
 
+      if (creep.memory.roleData.source === undefined) {
+        // Claim a source if we don't have one
+        creep.memory.roleData.source = claimSource(creep).id;
+      }
+
+      const source = Game.getObjectById(creep.memory.roleData.source);
+      if (source === null) {
+        throw "wat";
+      }
+
       const state = creep.memory.roleData.state;
       creep.say(state);
       switch (state) {
         case "harvesting":
           if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-            const harvestSource = creep.room.find(FIND_SOURCES)[0];
-            const result = creep.harvest(harvestSource);
+            const result = creep.harvest(source);
             switch (result) {
               case OK:
                 break;
               case ERR_NOT_IN_RANGE:
-                creep.moveTo(harvestSource);
+                creep.moveTo(source);
                 break;
               default:
                 throw new ScreepsError(result, "Could not harvest for upgrading");

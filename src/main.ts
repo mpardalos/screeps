@@ -13,8 +13,6 @@ function nextName(basename: string) {
   return val;
 }
 
-const primarySpawn = Game.spawns["Spawn1"];
-
 const roles: { [name in RoleName]: Role } = { harvester, upgrader };
 
 function spawnRole(spawn: StructureSpawn, roleName: RoleName) {

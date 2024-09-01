@@ -8,7 +8,7 @@ export interface UpgraderMemory {
 }
 
 export const upgrader: Role = {
-  count: 5,
+  count: 10,
   body: [WORK, MOVE, CARRY],
   initMemory: { state: "harvesting" },
 
